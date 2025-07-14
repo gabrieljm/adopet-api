@@ -53,11 +53,11 @@ public class AbrigoController {
         }
     }
 
-    @PostMapping("/{idOuNome}/pets")
+    @PostMapping("/{idOuNome}/pets/{petId}")
     @Transactional
-    public ResponseEntity<String> cadastrarPet(@PathVariable String idOuNome, @RequestBody @Valid Pet pet) {
+    public ResponseEntity<String> cadastrarPet(@PathVariable String idOuNome, @PathVariable Long petId) {
         try {
-            this.abrigoService.cadastrarPet(idOuNome, pet);
+            this.abrigoService.cadastrarPet(idOuNome, petId);
 
             return ResponseEntity.ok("Cadastro de pet efetuado com sucesso!");
         } catch (EntityNotFoundException e) {

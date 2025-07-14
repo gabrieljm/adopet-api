@@ -4,6 +4,7 @@ import br.com.alura.adopet.api.dto.CadastroAbrigoDto;
 import br.com.alura.adopet.api.model.Abrigo;
 import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.repository.AbrigoRepository;
+import br.com.alura.adopet.api.repository.PetRepository;
 import br.com.alura.adopet.api.validation.CadastroAbrigoValidation;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ public class AbrigoService {
 
     @Autowired
     private AbrigoRepository repository;
+
+    @Autowired
+    private PetRepository petRepository;
 
     @Autowired
     private List<CadastroAbrigoValidation> validacoes;
@@ -44,25 +48,23 @@ public class AbrigoService {
         }
     }
 
-    public void cadastrarPet(String idOuNome, Pet pet) {
+    public void cadastrarPet(String idOuNome, Long petId) {
         try {
             Long id = Long.parseLong(idOuNome);
+            Pet pet = petRepository.getReferenceById(petId);
             Abrigo abrigo = repository.getReferenceById(id);
             pet.setAbrigo(abrigo);
             pet.setAdotado(false);
             abrigo.getPets().add(pet);
-
-            repository.save(abrigo);
         } catch (EntityNotFoundException enfe) {
             throw new EntityNotFoundException();
         } catch (NumberFormatException nfe) {
             try {
+                Pet pet = petRepository.getReferenceById(petId);
                 Abrigo abrigo = repository.findByNome(idOuNome);
                 pet.setAbrigo(abrigo);
                 pet.setAdotado(false);
                 abrigo.getPets().add(pet);
-
-                repository.save(abrigo);
             } catch (EntityNotFoundException enfe) {
                 throw new EntityNotFoundException();
             }

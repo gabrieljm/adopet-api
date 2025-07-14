@@ -18,7 +18,6 @@ public class Abrigo {
 
     private String telefone;
 
-
     private String email;
 
     @OneToMany(mappedBy = "abrigo", cascade = CascadeType.ALL)
