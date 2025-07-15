@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TelefoneJaCadastradoValidation implements CadastroAbrigoValidation {
+public class AbrigoTelefoneJaCadastradoValidation implements CadastroAbrigoValidation {
 
     @Autowired
     private AbrigoRepository abrigoRepository;

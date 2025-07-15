@@ -7,17 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NomeJaCadastradoValidation implements CadastroAbrigoValidation {
+public class AbrigoEmailJaCadastradoValidation implements CadastroAbrigoValidation {
 
     @Autowired
     private AbrigoRepository abrigoRepository;
 
     @Override
     public void validar(CadastroAbrigoDto dto) {
-        boolean nomeJaCadastrado = abrigoRepository.existsByNome(dto.nome());
+        boolean emailJaCadastrado = abrigoRepository.existsByEmail(dto.email());
 
-        if (nomeJaCadastrado) {
-            throw new ValidacaoException("Nome já cadastrado para outro abrigo!");
+        if (emailJaCadastrado) {
+            throw new ValidacaoException("Email já cadastrado para outro abrigo!");
         }
     }
 }
