@@ -1,6 +1,6 @@
 package br.com.alura.adopet.api.controller;
 
-import br.com.alura.adopet.api.dto.DadosDetalhesPetDto;
+import br.com.alura.adopet.api.dto.DetalhesPetDto;
 import br.com.alura.adopet.api.service.PetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +18,8 @@ public class PetController {
     private PetService service;
 
     @GetMapping
-    public ResponseEntity<List<DadosDetalhesPetDto>> listarTodosDisponiveis() {
-        List<DadosDetalhesPetDto> petsDisponiveis = service.buscarPetsDisponiveis();
+    public ResponseEntity<List<DetalhesPetDto>> listarTodosDisponiveis() {
+        List<DetalhesPetDto> petsDisponiveis = service.buscarPetsDisponiveis();
 
         return ResponseEntity.ok(petsDisponiveis);
     }

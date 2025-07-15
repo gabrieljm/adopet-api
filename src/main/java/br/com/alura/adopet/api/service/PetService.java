@@ -1,7 +1,7 @@
 package br.com.alura.adopet.api.service;
 
 import br.com.alura.adopet.api.dto.CadastroPetDto;
-import br.com.alura.adopet.api.dto.DadosDetalhesPetDto;
+import br.com.alura.adopet.api.dto.DetalhesPetDto;
 import br.com.alura.adopet.api.model.Abrigo;
 import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.repository.PetRepository;
@@ -16,11 +16,11 @@ public class PetService {
     @Autowired
     private PetRepository repository;
 
-    public List<DadosDetalhesPetDto> buscarPetsDisponiveis() {
+    public List<DetalhesPetDto> buscarPetsDisponiveis() {
         return repository
                 .findAllByAdotadoFalse()
                 .stream()
-                .map(DadosDetalhesPetDto::new)
+                .map(DetalhesPetDto::new)
                 .toList();
     }
 
