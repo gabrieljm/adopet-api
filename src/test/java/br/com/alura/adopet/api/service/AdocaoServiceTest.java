@@ -1,10 +1,9 @@
 package br.com.alura.adopet.api.service;
 
+import br.com.alura.adopet.api.dto.AprovacaoAdocaoDto;
+import br.com.alura.adopet.api.dto.ReprovacaoAdocaoDto;
 import br.com.alura.adopet.api.dto.SolicitacaoAdocaoDto;
-import br.com.alura.adopet.api.model.Abrigo;
-import br.com.alura.adopet.api.model.Adocao;
-import br.com.alura.adopet.api.model.Pet;
-import br.com.alura.adopet.api.model.Tutor;
+import br.com.alura.adopet.api.model.*;
 import br.com.alura.adopet.api.repository.AdocaoRepository;
 import br.com.alura.adopet.api.repository.PetRepository;
 import br.com.alura.adopet.api.repository.TutorRepository;
@@ -14,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,15 @@ class AdocaoServiceTest {
 
     private SolicitacaoAdocaoDto dto;
 
+    @Mock
+    private AprovacaoAdocaoDto aprovacaoDto;
+
+    @Mock
+    private ReprovacaoAdocaoDto reprovacaoDto;
+
+    @Spy
+    private Adocao adocao;
+
     @Captor
     private ArgumentCaptor<Adocao> adocaoCaptor;
 
@@ -95,5 +105,55 @@ class AdocaoServiceTest {
 
         then(validador1).should().validar(dto);
         then(validador2).should().validar(dto);
+    }
+
+    @Test
+    void deveEnviarEmailAoSolicitar() {
+        this.dto = new SolicitacaoAdocaoDto(10l, 20l, "motivo qualquer");
+
+        given(petRepository.getReferenceById(dto.petId())).willReturn(pet);
+        given(tutorRepository.getReferenceById(dto.tutorId())).willReturn(tutor);
+        given(pet.getAbrigo()).willReturn(abrigo);
+
+        service.solicitar(dto);
+
+        then(repository).should().save(adocaoCaptor.capture());
+        Adocao adocaoSalva = adocaoCaptor.getValue();
+
+        then(emailService).should().enviarEmail(
+                adocaoSalva.getPet().getAbrigo().getEmail(),
+                "Solicitação de adoção",
+                "Olá " + adocaoSalva.getPet().getAbrigo().getNome() + "!\n\nUma solicitação de adoção foi registrada hoje para o pet: " + adocaoSalva.getPet().getNome() + ". \n\nFavor avaliar para aprovação ou reprovação."
+        );
+    }
+
+    @Test
+    void deveAprovarAdocao() {
+        given(repository.getReferenceById(aprovacaoDto.adocaoId())).willReturn(adocao);
+        given(adocao.getPet()).willReturn(pet);
+        given(pet.getAbrigo()).willReturn(abrigo);
+        given(adocao.getTutor()).willReturn(tutor);
+        given(tutor.getNome()).willReturn("Rodrigo");
+        given(adocao.getData()).willReturn(LocalDateTime.now());
+
+        service.aprovar(aprovacaoDto);
+
+        then(adocao).should().aprovar();
+        assertEquals(StatusAdocao.APROVADO, adocao.getStatus());
+    }
+
+    @Test
+    void deveReprovarAdocao() {
+        given(repository.getReferenceById(reprovacaoDto.adocaoId())).willReturn(adocao);
+        given(adocao.getPet()).willReturn(pet);
+        given(pet.getAbrigo()).willReturn(abrigo);
+        given(adocao.getTutor()).willReturn(tutor);
+        given(tutor.getNome()).willReturn("Rodrigo");
+        given(adocao.getData()).willReturn(LocalDateTime.now());
+
+        service.reprovar(reprovacaoDto);
+
+        then(adocao).should().reprovar(reprovacaoDto.justificativa());
+        assertEquals(StatusAdocao.REPROVADO, adocao.getStatus());
     }
 }

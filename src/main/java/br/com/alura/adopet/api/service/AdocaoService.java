@@ -47,13 +47,17 @@ public class AdocaoService {
         this.emailService.enviarEmail(
                 adocao.getPet().getAbrigo().getEmail(),
                 "Solicitação de adoção",
-                "Olá " +adocao.getPet().getAbrigo().getNome() +"!\n\nUma solicitação de adoção foi registrada hoje para o pet: " +adocao.getPet().getNome() +". \nFavor avaliar para aprovação ou reprovação.");
+                "Olá " +adocao.getPet().getAbrigo().getNome() +"!\n\nUma solicitação de adoção foi registrada hoje para o pet: " +adocao.getPet().getNome() +". \n\nFavor avaliar para aprovação ou reprovação.");
     }
 
     public void aprovar(AprovacaoAdocaoDto dto) {
         Adocao adocao = repository.getReferenceById(dto.adocaoId());
 
         adocao.aprovar();
+
+        System.out.println(">> Email: " + adocao.getPet());
+        System.out.println(">> Abrigo: " + adocao.getPet().getAbrigo());
+        System.out.println(">> Email abrigo: " + adocao.getPet().getAbrigo().getEmail());
 
         this.emailService.enviarEmail(
                 adocao.getTutor().getEmail(),

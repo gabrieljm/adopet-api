@@ -131,7 +131,7 @@ class AbrigoControllerTest {
 
     @Test
     void deveDevolverCodigo200ParaCadastroDePetPeloId() throws Exception {
-        String id = "1";
+        String abrigoId = "1";
         String json = """
                 {
                     "tipo": "GATO",
@@ -144,7 +144,7 @@ class AbrigoControllerTest {
                 """;
 
         var response = mvc.perform(
-                post("/abrigos/{id}/pets", id)
+                post("/abrigos/{abrigoId}/pets", abrigoId)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
@@ -154,7 +154,7 @@ class AbrigoControllerTest {
 
     @Test
     void deveDevolverCodigo200ParaCadastroDePetPeloNome() throws Exception {
-        String nome = "Abrigo feliz";
+        String abrigoNome = "Abrigo feliz";
         String json = """
                 {
                     "tipo": "GATO",
@@ -167,12 +167,62 @@ class AbrigoControllerTest {
                 """;
 
         var response = mvc.perform(
-                post("/abrigos/{id}/pets", nome)
+                post("/abrigos/{abrigoNome}/pets", abrigoNome)
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
         ).andReturn().getResponse();
 
         assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    void deveDevolverCodigo404ParaCadastroDePetEmAbrigoNaoEncontradoPeloId() throws Exception {
+        String abrigoId = "1";
+        String json = """
+                {
+                    "tipo": "GATO",
+                    "nome": "Miau",
+                    "raca": "padrao",
+                    "idade": "5",
+                    "cor": "Parda",
+                    "peso": "6.4"
+                }
+                """;
+
+        given(service.carregarAbrigo(abrigoId)).willThrow(ValidacaoException.class);
+
+        var response = mvc.perform(
+                post("/abrigos/{abrigoId}/pets", abrigoId)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        assertEquals(404, response.getStatus());
+    }
+
+    @Test
+    void deveDevolverCodigo404ParaCadastroDePetEmAbrigoNaoEncontradoPeloNome() throws Exception {
+        String abrigoNome = "Abrigo legal";
+        String json = """
+                {
+                    "tipo": "GATO",
+                    "nome": "Miau",
+                    "raca": "padrao",
+                    "idade": "5",
+                    "cor": "Parda",
+                    "peso": "6.4"
+                }
+                """;
+
+        given(service.carregarAbrigo(abrigoNome)).willThrow(ValidacaoException.class);
+
+        var response = mvc.perform(
+                post("/abrigos/{abrigoNome}/pets", abrigoNome)
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andReturn().getResponse();
+
+        assertEquals(404, response.getStatus());
     }
 
     @Test
